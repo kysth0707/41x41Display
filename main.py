@@ -1,11 +1,34 @@
+from tkinter import YView
 import pygame
 from pygame.math import Vector2
+import os
+
+
+def ReturnPos(loc : str):
+	return os.getcwd() + loc
+
+def AddFontText(Text, Alias, Color):
+	global FontTexts, FontRects
+	FontTexts.append(MyFont.render("불러오기", True, FontColor))
+	FontRects.append(FontTexts[len(FontTexts) - 1].get_rect())
+	# print(FontRects[len(FontRects) - 1])
+	
+
 
 pygame.init()
 
 ScreenWidth = 1000
 ScreenHeight = 800
 screen = pygame.display.set_mode((ScreenWidth, ScreenHeight), pygame.RESIZABLE)
+
+MyFont = pygame.font.Font(ReturnPos("\\font\\NEXONLv1GothicRegular.ttf"), 20)
+
+FontColor = (255, 255, 255)
+FontTexts = []
+FontRects = []
+AddFontText("불러오기", True, FontColor)
+AddFontText("저장하기", True, FontColor)
+
 
 BoxOnColor = (255, 255, 255)
 BoxOffColor = (0, 0, 0)
@@ -27,6 +50,27 @@ def DrawBoxs():
 												BoxFillSize1  * ScreenHeight / 1000 + loopy * BoxSize * ZoomValue + Y, 
 												BoxSize * ZoomValue, BoxSize * ZoomValue], 2)
 
+def DrawTexts():
+	for loopy in range(len(FontTexts)):
+		Xval = ScreenWidth - 50 - FontRects[0][2]
+		Yval = 50 + loopy * (FontRects[loopy][3] + 20)
+		screen.blit(FontTexts[loopy], (Xval, Yval))
+
+def ReturnBoxNum(MousePos):
+	Exit = False
+	for loopx in range(BoxNum):
+		for loopy in range(BoxNum):
+			BoxSize = (BoxFillSize2 - BoxFillSize1) / BoxNum * ScreenHeight / 1000
+			x = BoxFillSize1  * ScreenHeight / 1000 + loopx * BoxSize * ZoomValue + X
+			y = BoxFillSize1  * ScreenHeight / 1000 + loopy * BoxSize * ZoomValue + Y
+			if MousePos[0] >= x and MousePos[0] <= x + BoxSize * ZoomValue:
+				if MousePos[1] >= y and MousePos[1] <= y + BoxSize * ZoomValue:
+					Exit = True
+					# BoxData[loopx][loopy] = not BoxData[loopx][loopy]
+					return loopx, loopy
+					break
+		if Exit:
+			break
 
 BoxData = [[False] * BoxNum for _ in range(BoxNum)]
 
@@ -35,12 +79,15 @@ ZoomValue = 1
 Draging = False
 MouseLastPos = None
 
+clock = pygame.time.Clock()
+
 Run = True
 while Run:
 	ScreenWidth, ScreenHeight = pygame.display.get_surface().get_size()
 
 	screen.fill((50,50,50))
 	DrawBoxs()
+	DrawTexts()
 
 	pygame.display.update()
 
@@ -68,20 +115,8 @@ while Run:
 				Draging = True
 
 			elif event.button == 3: #드래그 중
-				MousePos = pygame.mouse.get_pos()
-				Exit = False
-				for loopx in range(BoxNum):
-					for loopy in range(BoxNum):
-						BoxSize = (BoxFillSize2 - BoxFillSize1) / BoxNum * ScreenHeight / 1000
-						x = BoxFillSize1  * ScreenHeight / 1000 + loopx * BoxSize * ZoomValue + X
-						y = BoxFillSize1  * ScreenHeight / 1000 + loopy * BoxSize * ZoomValue + Y
-						if MousePos[0] >= x and MousePos[0] <= x + BoxSize * ZoomValue:
-							if MousePos[1] >= y and MousePos[1] <= y + BoxSize * ZoomValue:
-								Exit = True
-								BoxData[loopx][loopy] = not BoxData[loopx][loopy]
-								break
-					if Exit:
-						break
+				BoxX, BoxY = ReturnBoxNum(pygame.mouse.get_pos())
+				BoxData[BoxX][BoxY] = not BoxData[BoxX][BoxY]
 			
 			elif event.button == 2:
 				for loopx in range(BoxNum):
@@ -99,3 +134,5 @@ while Run:
 		MouseLastPos = pygame.mouse.get_pos()
 		X -= ChangeValue[0]
 		Y -= ChangeValue[1]
+
+	clock.tick(60)
