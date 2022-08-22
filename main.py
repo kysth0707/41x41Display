@@ -92,6 +92,17 @@ def ReturnBoxNum(MousePos):
 		if Exit:
 			break
 
+	return -1, -1
+
+def Export():
+	for loopx in range(BoxNum):
+		ExportValue = ""
+		for loopy in range(BoxNum):
+			ExportValue += str(1 if BoxData[loopy][loopx] else 0)
+		Value = int(ExportValue, 2)
+		# print(hex(Value))
+		# print(bytes(Value))
+
 BoxData = [[False] * BoxNum for _ in range(BoxNum)]
 
 X, Y = 0, 0
@@ -119,6 +130,11 @@ while Run:
 			run = False
 			pygame.quit()
 
+		elif event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_SPACE:
+				X, Y = 0, 0
+				ZoomValue = 1
+
 		elif event.type == pygame.MOUSEBUTTONDOWN:
 			if event.button == 4: #줌 인
 				ZoomValue += 0.05
@@ -137,16 +153,14 @@ while Run:
 				MouseLastPos = pygame.mouse.get_pos()
 				Draging = True
 
-			elif event.button == 3: #드래그 중
+			elif event.button == 3:
 				BoxX, BoxY = ReturnBoxNum(pygame.mouse.get_pos())
+				if BoxX == -1:
+					break
 				BoxData[BoxX][BoxY] = not BoxData[BoxX][BoxY]
 			
 			elif event.button == 2:
-				for loopx in range(BoxNum):
-					ExportValue = ""
-					for loopy in range(BoxNum):
-						ExportValue += str(1 if BoxData[loopy][loopx] else 0)
-					print(hex(int(ExportValue, 2)))
+				Export()
 
 		elif event.type == pygame.MOUSEBUTTONUP:
 			if event.button == 1:
