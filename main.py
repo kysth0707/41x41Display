@@ -2,6 +2,7 @@ from tkinter import YView
 from PIL import Image
 import pygame
 import os
+from CustomConvert import CustomConverter
 import time
 
 
@@ -95,6 +96,7 @@ def ReturnBoxNum(MousePos):
 	return -1, -1
 
 def Export():
+	ExportList = []
 	for loopx in range(BoxNum):
 		ExportValue = ""
 		for loopy in range(BoxNum):
@@ -102,8 +104,19 @@ def Export():
 		Value = int(ExportValue, 2)
 		# print(hex(Value))
 		# print(bytes(Value))
+		# print()
+		ExportList.append(CustomConverter(2**16, Value))
+	# print(ExportList)
+
+	
+	with open(ReturnPos(f"\\export\\{time.strftime('%Y-%m-%d_%H_%M_%S')}.txt"), "w", encoding="utf-8") as f:
+		f.write(str(ExportList))
+
+	print("Export")
 
 BoxData = [[False] * BoxNum for _ in range(BoxNum)]
+for i in range(41):
+	BoxData[i][40] = True
 
 X, Y = 0, 0
 ZoomValue = 1
