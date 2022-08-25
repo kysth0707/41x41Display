@@ -1,4 +1,5 @@
-def CustomConverter(digit : int, num : int):
+def CustomConverter(num : int):
+	digit = 2**16
 	number = num
 	ExportTxt = ""
 

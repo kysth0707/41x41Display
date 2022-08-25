@@ -105,7 +105,7 @@ def Export():
 		# print(hex(Value))
 		# print(bytes(Value))
 		# print()
-		ExportList.append(CustomConverter(2**16, Value))
+		ExportList.append(CustomConverter(Value))
 	# print(ExportList)
 
 	
