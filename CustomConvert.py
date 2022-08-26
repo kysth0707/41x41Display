@@ -4,7 +4,7 @@ def CustomConverter(num : int):
 	ExportTxt = ""
 
 	if number == 0:
-		return number
+		return "000"
 	
 	while(number != 0):
 		remain = number % digit
@@ -17,6 +17,6 @@ def CustomConverter(num : int):
 		number = int(number / digit)
 		# print(number)
 
-	return ExportTxt
+	return ExportTxt.zfill(3)
 
 # print(CustomConverter(16, 729))

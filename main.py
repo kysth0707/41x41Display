@@ -41,17 +41,24 @@ BoxFillSize1 = 50 # y 50 ~ 950
 BoxFillSize2 = 950 #
 
 ImgSelected = None
+ImgUnSelected = None
 
 def GetImageSize():
 	return int(ScreenHeight / 1000 * 100)
 
 def ImageResize():
-	global ImgSelected
+	global ImgSelected, ImgUnSelected
 	a = Image.open(ReturnPos("\\img\\original\\Selected.png"))
 	SizeValue = GetImageSize()
 	b = a.resize((SizeValue, SizeValue))
 	b.save(ReturnPos("\\img\\edited\\Selected.png"))
 	ImgSelected = pygame.image.load(ReturnPos("\\img\\edited\\Selected.png"))
+
+	a = Image.open(ReturnPos("\\img\\original\\UnSelected.png"))
+	SizeValue = GetImageSize()
+	b = a.resize((SizeValue, SizeValue))
+	b.save(ReturnPos("\\img\\edited\\UnSelected.png"))
+	ImgUnSelected = pygame.image.load(ReturnPos("\\img\\edited\\UnSelected.png"))
 
 ImageResize()
 
@@ -71,11 +78,20 @@ def DrawBoxs():
 												BoxSize * ZoomValue, BoxSize * ZoomValue], 2)
 
 def DrawIcons():
-	ImageList = [ImgSelected]
-	for i in range(len(ImageList)):
-		Xval = ScreenWidth - GetImageSize()
-		Yval = (50 + i * GetImageSize() + 50) * ScreenHeight / 1000
-		screen.blit(ImageList[i], (Xval, Yval))
+	# ImageList = [ImgSelected]
+	for i in range(8):
+		Xval = ScreenWidth - 128 * ScreenHeight / 1000
+		# Yval = (50 + i * GetImageSize() * 1.28) * ScreenHeight / 1000
+		Yval = 50 * ScreenHeight / 1000 + (i * 100)  * ScreenHeight / 1000
+		MouseXY = pygame.mouse.get_pos()
+
+		if Xval < MouseXY[0] and MouseXY[0] < Xval + ScreenWidth:
+			if Yval < MouseXY[1] and MouseXY[1] < Yval + GetImageSize():
+				screen.blit(ImgSelected, (Xval, Yval))
+			else:
+				screen.blit(ImgUnSelected, (Xval, Yval))
+		else:
+			screen.blit(ImgUnSelected, (Xval, Yval))
 
 def ReturnBoxNum(MousePos):
 	Exit = False
@@ -96,7 +112,7 @@ def ReturnBoxNum(MousePos):
 	return -1, -1
 
 def Export():
-	ExportList = []
+	ExportText = ""
 	for loopx in range(BoxNum):
 		ExportValue = ""
 		for loopy in range(BoxNum):
@@ -105,14 +121,17 @@ def Export():
 		# print(hex(Value))
 		# print(bytes(Value))
 		# print()
-		ExportList.append(CustomConverter(Value))
+		ExportText += CustomConverter(Value)
 	# print(ExportList)
 
 	
 	with open(ReturnPos(f"\\export\\{time.strftime('%Y-%m-%d_%H_%M_%S')}.txt"), "w", encoding="utf-8") as f:
-		f.write(str(ExportList))
+		f.write(ExportText)
 
 	print("Export")
+
+def DrawFrameBar():
+	pygame.draw.rect(screen, (200, 200, 200), [0, ScreenHeight - 50 * ScreenHeight / 1000, ScreenWidth, 50 * ScreenHeight / 1000])
 
 BoxData = [[False] * BoxNum for _ in range(BoxNum)]
 for i in range(41):
@@ -122,6 +141,7 @@ X, Y = 0, 0
 ZoomValue = 1
 Draging = False
 MouseLastPos = None
+SceneFrame = 0
 
 clock = pygame.time.Clock()
 
@@ -133,6 +153,7 @@ while Run:
 	screen.fill((50,50,50))
 	DrawBoxs()
 	DrawIcons()
+	DrawFrameBar()
 
 	pygame.display.update()
 
