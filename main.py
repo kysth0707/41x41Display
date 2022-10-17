@@ -1,4 +1,3 @@
-from tkinter import YView
 from PIL import Image
 import pygame
 import os
@@ -36,7 +35,7 @@ screen = pygame.display.set_mode((ScreenWidth, ScreenHeight), pygame.RESIZABLE)
 
 BoxOnColor = (255, 255, 255)
 BoxOffColor = (0, 0, 0)
-BoxNum = 41
+BoxNum = 32
 BoxFillSize1 = 50 # y 50 ~ 950
 BoxFillSize2 = 950 #
 
@@ -134,8 +133,8 @@ def DrawFrameBar():
 	pygame.draw.rect(screen, (200, 200, 200), [0, ScreenHeight - 50 * ScreenHeight / 1000, ScreenWidth, 50 * ScreenHeight / 1000])
 
 BoxData = [[False] * BoxNum for _ in range(BoxNum)]
-for i in range(41):
-	BoxData[i][40] = True
+for i in range(BoxNum):
+	BoxData[i][BoxNum - 1] = True
 
 X, Y = 0, 0
 ZoomValue = 1
